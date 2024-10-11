@@ -1,0 +1,148 @@
+class App:
+    def __init__(self):
+        self.products = {}
+
+    def AddProduct(self, id, name, price, category):
+        if id in self.products:
+            return False
+        else:
+            self.products[id] = {"name": name, "price": price, "category": category}
+            return True
+
+    def UpdateProduct(self, id, price):
+        if id in self.products:
+            self.products[id]["price"] = price
+            return True
+        return False
+
+    def DeleteProduct(self, id):
+        if id in self.products:
+            del self.products[id]
+            return True
+        return False
+
+    def GetProductById(self, id):
+        if id in self.products:
+            product = self.products[id]
+            return f"ID: {id}, Name: {product['name']}, Price: {product['price']}, Category: {product['category']}"
+        else:
+            return f"Product with ID {id} not found."
+
+    def GetAllProducts(self):
+        if not self.products:
+            return "No products available."
+        else:
+            return "\n".join([
+                f"ID: {pid}, Name: {product['name']}, Price: {product['price']}, Category: {product['category']}"
+                for pid, product in self.products.items()
+            ])
+
+    def GetProductsByCategory(self, category):
+        filtered_products = [
+            f"ID: {pid}, Name: {product['name']}, Price: {product['price']}, Category: {product['category']}"
+            for pid, product in self.products.items() if product['category'].lower() == category.lower()
+        ]
+        if filtered_products:
+            return "\n".join(filtered_products)
+        else:
+            return f"No products found in category '{category}'."
+
+    def GetProductsBetweenPrices(self, min_price, max_price):
+        filtered_products = [
+            f"ID: {pid}, Name: {product['name']}, Price: {product['price']}, Category: {product['category']}"
+            for pid, product in self.products.items() if min_price <= product['price'] <= max_price
+        ]
+        if filtered_products:
+            return "\n".join(filtered_products)
+        else:
+            return f"No products found between prices {min_price} and {max_price}."
+
+
+if __name__ == "__main__":
+    obj = App()
+
+    while True:
+        print('''\n1. Add Product
+2. Update Product
+3. Delete Product
+4. Get product details by PID
+5. Get all products
+6. Get products by Category
+7. Get products between prices
+8. Exit''')
+
+        try:
+            choice = int(input("Enter your choice: "))
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+            continue
+
+        if choice == 1:
+            print("Enter the product details:")
+            try:
+                id = int(input("Enter the product ID: "))
+                name = input("Enter product name: ")
+                price = float(input("Enter the price: "))
+                category = input("Enter the category: ")
+                result = obj.AddProduct(id, name, price, category)
+                if result:
+                    print("Product added successfully.")
+                else:
+                    print("Product with this ID already exists.")
+            except ValueError:
+                print("Invalid input. Please enter valid product details.")
+
+        elif choice == 2:
+            try:
+                pid = int(input("Enter the product ID which you want to update: "))
+                cost = float(input("Enter the updated price of the product: "))
+                result = obj.UpdateProduct(pid, cost)
+                if result:
+                    print("Price updated successfully.")
+                else:
+                    print("Product not found.")
+            except ValueError:
+                print("Invalid input. Please enter a valid product ID and price.")
+
+        elif choice == 3:
+            try:
+                pid = int(input("Enter the product ID which you want to delete: "))
+                result = obj.DeleteProduct(pid)
+                if result:
+                    print("Product deleted successfully.")
+                else:
+                    print("Product not found.")
+            except ValueError:
+                print("Invalid input. Please enter a valid product ID.")
+
+        elif choice == 4:
+            try:
+                pid = int(input("Enter the product ID: "))
+                result = obj.GetProductById(pid)
+                print(result)
+            except ValueError:
+                print("Invalid input. Please enter a valid product ID.")
+
+        elif choice == 5:
+            print("All Products:")
+            print(obj.GetAllProducts())
+
+        elif choice == 6:
+            category = input("Enter the category: ")
+            result = obj.GetProductsByCategory(category)
+            print(result)
+
+        elif choice == 7:
+            try:
+                min_price, max_price = map(float, input("Enter the minimum and maximum prices separated by a space: ").split())
+                result = obj.GetProductsBetweenPrices(min_price, max_price)
+                print(result)
+            except ValueError:
+                print("Invalid input. Please enter valid price values.")
+
+        elif choice == 8:
+            print("Exiting the app.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
